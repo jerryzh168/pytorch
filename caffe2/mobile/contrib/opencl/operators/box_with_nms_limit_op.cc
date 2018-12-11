@@ -112,27 +112,15 @@ bool CPPBoxWithNMSLimitOp<T>::RunOnDevice() {
 
   if (first_run_) {
     first_run_ = false;
-    TensorCPU fake_out_scores;
-    fake_out_scores.Resize(max_total_keeps);
-    out_scores->ResizeLike(fake_out_scores);
-    TensorCPU fake_out_boxes;
-    fake_out_boxes.Resize(max_total_keeps, 4);
-    out_boxes->ResizeLike(fake_out_boxes);
-    TensorCPU fake_out_classes;
-    fake_out_classes.Resize(max_total_keeps);
-    out_classes->ResizeLike(fake_out_classes);
+    out_scores->Resize(max_total_keeps);
+    out_boxes->Resize(max_total_keeps, 4);
+    out_classes->Resize(max_total_keeps);
     if (out_batch_splits) {
-      TensorCPU fake_out_batch_splits;
-      fake_out_batch_splits.Resize(batch_size);
-      out_batch_splits->ResizeLike(fake_out_batch_splits);
+      out_batch_splits->Resize(batch_size);
     }
     if (out_keeps) {
-      TensorCPU fake_out_keeps;
-      fake_out_keeps.Resize(detections_per_im_);
-      out_keeps->ResizeLike(fake_out_keeps);
-      TensorCPU fake_out_keeps_size;
-      fake_out_keeps_size.Resize(batch_size, num_classes);
-      out_keeps_size->ResizeLike(fake_out_keeps_size);
+      out_keeps->Resize(detections_per_im_);
+      out_keeps_size->Resize(batch_size, num_classes);
     }
     // Configure
     box_with_nms_limit_layer_.configure(tscores_->get_underlying(), tboxes_->get_underlying(),
@@ -194,31 +182,18 @@ bool CPPBoxWithNMSLimitOp<T>::RunOnDevice() {
       out_keeps_size->get_underlying()->unmap();
     }
   } else {
-    TensorCPU fake_out_scores;
-    fake_out_scores.Resize(max_total_keeps);
-    bool scores_need_allocation = out_scores->ResizeLike(fake_out_scores);
-    TensorCPU fake_out_boxes;
-    fake_out_boxes.Resize(max_total_keeps, 4);
-    bool boxes_need_allocation = out_boxes->ResizeLike(fake_out_boxes);
-    TensorCPU fake_out_classes;
-    fake_out_classes.Resize(max_total_keeps);
-    bool classes_need_allocation = out_classes->ResizeLike(fake_out_classes);
-    out_classes->ResizeLike(fake_out_classes);
+    bool scores_need_allocation = out_scores->Resize(max_total_keeps);
+    bool boxes_need_allocation = out_boxes->Resize(max_total_keeps, 4);
+    bool classes_need_allocation = out_classes->Resize(max_total_keeps);
     bool out_batch_splits_need_allocation = false;
     bool keeps_need_allocation            = false;
     bool keeps_size_need_allocation       = false;
     if (out_batch_splits) {
-      TensorCPU fake_out_batch_splits;
-      fake_out_batch_splits.Resize(batch_size);
-      out_batch_splits_need_allocation = out_batch_splits->ResizeLike(fake_out_batch_splits);
+      out_batch_splits_need_allocation = out_batch_splits->Resize(batch_size);
     }
     if (out_keeps) {
-      TensorCPU fake_out_keeps;
-      fake_out_keeps.Resize(detections_per_im_);
-      keeps_need_allocation = out_keeps->ResizeLike(fake_out_keeps);
-      TensorCPU fake_out_keeps_size;
-      fake_out_keeps_size.Resize(batch_size, num_classes);
-      keeps_size_need_allocation = out_keeps_size->ResizeLike(fake_out_keeps_size);
+      keeps_need_allocation = out_keeps->Resize(detections_per_im_);
+      keeps_size_need_allocation = out_keeps_size->Resize(batch_size, num_classes);
     }
     // Configure
     box_with_nms_limit_layer_.configure(tscores_->get_underlying(), tboxes_->get_underlying(),

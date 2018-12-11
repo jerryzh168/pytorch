@@ -58,10 +58,12 @@ bool CLConvOp<T, Activation>::RunOnDevice() {
   OpenCLTensor<T> *Y =
     OperatorBase::Outputs()[0]->template GetMutable<OpenCLTensor<T>>();
 
+  LOG(ERROR) << "[C2DEBUG] : 1";
   const int N = X_->dim32(0), H = X_->dim32(2), W = X_->dim32(3), C = X_->dim32(1);
   CAFFE_ENFORCE_EQ(kernel_.size(), 2,
                    "Only 2d convolution is supported with ARM compute backend");
 
+  LOG(ERROR) << "[C2DEBUG] : 2";
   CAFFE_ENFORCE(X_->ndim() == filter_->ndim());
   const int M = filter_->dim32(0);
   CAFFE_ENFORCE(filter_->dim32(2) == kernel_h());
@@ -72,13 +74,14 @@ bool CLConvOp<T, Activation>::RunOnDevice() {
   CAFFE_ENFORCE(M % group_ == 0);
   CAFFE_ENFORCE(filter_->dim32(1) == C / group_);
 
+  LOG(ERROR) << "[C2DEBUG] : 3";
+
   if (first_run_) {
     first_run_ = false;
 
     // resize output accordingly
-    TensorCPU fakeX;
-    fakeX.Resize(X_->dims());
-    TensorCPU fakeY;
+    Tensor fakeX(X_->dims(), CPU);
+    Tensor fakeY(CPU);
     ConvPoolOpBase<CLContext>::SetOutputSize(fakeX, &fakeY, filter_->dim32(0));
     Y->ResizeLike(fakeY);
 
@@ -104,6 +107,7 @@ bool CLConvOp<T, Activation>::RunOnDevice() {
                       arm_compute::PadStrideInfo(stride_[0], stride_[1], pads_[0], pads_[1]), arm_compute::WeightsInfo(),
                       arm_compute::Size2D(1, 1), act_info);
     }
+    LOG(ERROR) << "[C2DEBUG] : 4";
   } else if (second_run_) {
     // Always attempt to copy the CPU to GPU on input
     X_->lazy_allocate(Xblob, second_run_, true);
@@ -119,9 +123,8 @@ bool CLConvOp<T, Activation>::RunOnDevice() {
       conv_.run();
     }
   } else {
-    TensorCPU fakeX;
-    fakeX.Resize(X_->dims());
-    TensorCPU fakeY;
+    Tensor fakeX(X_->dims(), CPU);
+    Tensor fakeY(CPU);
     ConvPoolOpBase<CLContext>::SetOutputSize(fakeX, &fakeY, filter_->dim32(0));
     LOG(ERROR) << "[C2DEBUG] after SetOutputSize";
     bool need_allocation = Y->ResizeLike(fakeY, true);
@@ -164,6 +167,7 @@ bool CLConvOp<T, Activation>::RunOnDevice() {
       conv_.run();
     }
  }
+  LOG(ERROR) << "[C2DEBUG] : 5";
   return true;
 }
 

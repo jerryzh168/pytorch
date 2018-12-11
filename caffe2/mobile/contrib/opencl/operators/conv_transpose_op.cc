@@ -62,9 +62,8 @@ bool CLConvTransposeOp<T>::RunOnDevice() {
     first_run_ = false;
 
     // resize output accordingly
-    TensorCPU fakeX;
-    fakeX.Resize(X_->dims());
-    TensorCPU fakeY;
+    Tensor fakeX(X_->dims(), CPU);
+    Tensor fakeY(CPU);
     ConvTransposeUnpoolBase<CLContext>::SetOutputSize(fakeX, &fakeY, output_channels);
     Y->ResizeLike(fakeY);
     LOG(INFO) << "[C2DEBUG] dims of X " << X_->dims();
@@ -120,9 +119,8 @@ bool CLConvTransposeOp<T>::RunOnDevice() {
 
     conv_trans_.run();
   } else {
-    TensorCPU fakeX;
-    fakeX.Resize(X_->dims());
-    TensorCPU fakeY;
+    Tensor fakeX(X_->dims(), CPU);
+    Tensor fakeY(CPU);
     ConvTransposeUnpoolBase<CLContext>::SetOutputSize(fakeX, &fakeY, output_channels);
     bool need_allocation = Y->ResizeLike(fakeY, true);
     // Configure

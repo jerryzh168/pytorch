@@ -92,7 +92,7 @@ void compareNetResult4D(Workspace& ws,
 
   auto &t = cpu_out->Get<TensorCPU>();
   int diff_num = 0;
-  if (gpu_out->IsType<TensorCPU>()) {
+  if (BlobIsTensorType(*gpu_out, CPU)) {
     auto& g = gpu_out->Get<TensorCPU>();
     EXPECT_EQ(g.size(), t.size());
     for (auto i = 0; i < t.size(); ++i) {
@@ -103,8 +103,9 @@ void compareNetResult4D(Workspace& ws,
       }
     }
   } else if (gpu_out->IsType<OpenCLTensor<T>>()) {
-    TensorCPU g;
-    getTensorCPU(gpu_out->Get<OpenCLTensor<T>>(), g);
+    const auto& cl_tensor = gpu_out->Get<OpenCLTensor<T>>();
+    Tensor g(cl_tensor.dims(), CPU);
+    getTensorCPU(cl_tensor, g);
     EXPECT_EQ(g.size(), t.size());
     for (auto i = 0; i < t.size(); ++i) {
       auto t_elem = t.data<float>()[i];

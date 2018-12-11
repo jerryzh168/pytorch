@@ -38,6 +38,7 @@ typedef half_float::half half;
 
 template <typename T> class OpenCLTensor;
 
+// TODO: inherit from BaseContext
 class CLContext final {
 public:
   static bool initialized;
@@ -46,6 +47,8 @@ public:
     DCHECK_EQ(option.device_type(), PROTO_OPENCL);
     CLContext();
   }
+  explicit CLContext(const at::Device& device)
+      : CLContext(DeviceToOption(device)) {}
   ~CLContext() {}
 
   static void sync() { arm_compute::CLScheduler::get().sync(); }
@@ -54,7 +57,7 @@ public:
   using deleted_unique_ptr = std::unique_ptr<T, std::function<void(T *)>>;
   template <typename T>
   static deleted_unique_ptr<const OpenCLTensor<T>> getCLTensor(const Blob *b, const OpenCLTensor<T>* X_old = nullptr) {
-    if (b->IsType<TensorCPU>()) {
+    if (BlobIsTensorType(*b, CPU)) {
 
       auto &Xcpu = b->Get<TensorCPU>();
       OpenCLTensor<T> *X_raw_ptr;
@@ -121,6 +124,18 @@ public:
   }
   bool HasAsyncPartDefault() const { return false; }
   bool SupportsAsyncScheduling() const { return false; }
+
+  at::Device device() const {
+    return at::Device(OPENCL);
+  }
+
+  DeviceType device_type() const {
+    return OPENCL;
+  }
+
+  static constexpr DeviceType GetDeviceType() {
+    return OPENCL;
+  }
 
 private:
   template <typename T>
@@ -347,8 +362,7 @@ private:
 };
 
 template<typename T = DataType>
-void getTensorCPU(const OpenCLTensor<T>& g_, TensorCPU& g) {
-  g.Resize(g_.dims());
+void getTensorCPU(const OpenCLTensor<T>& g_, Tensor& g) {
   g_.map();
   auto tensor = g_.get_underlying();
   auto info = tensor->info();

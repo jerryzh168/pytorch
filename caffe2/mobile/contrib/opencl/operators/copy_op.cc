@@ -43,9 +43,7 @@ bool CopyFromCLOp<T>::RunOnDevice() {
   if (first_run_) {
     first_run_ = false;
     for (int i = 0; i < Inputs().size(); ++i) {
-      auto* Y = OperatorBase::Outputs()[i]->template GetMutable<TensorCPU>();
-      Y->Resize(inputs_[i]->dims());
-      Y->template mutable_data<float>();
+      Output(i, inputs_[i]->dims(), at::dtype<float>().device(CPU));
     }
   } else {
     for (auto i = 0; i < Inputs().size(); ++i) {
@@ -54,7 +52,7 @@ bool CopyFromCLOp<T>::RunOnDevice() {
       // OpenCLTensor
       auto* X = inputs_[i].get();
       X->lazy_allocate(Xblob, second_run_, true);
-      auto* Y = OperatorBase::Outputs()[i]->template GetMutable<TensorCPU>();
+      auto* Y = Output(i, X->dims(), at::dtype<float>().device(CPU));
       Timer timer;
       timer.Start();
       getTensorCPU(*X, *Y);
