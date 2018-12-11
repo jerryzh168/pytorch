@@ -7,8 +7,8 @@ TEST(OPENCLOperatorTest, BoxWithNMSLimit) {
 
   const int count       = 10;
   const int num_classes = 4;
-  std::vector<int> scores_dims  = {count, num_classes};
-  std::vector<int> classes_dims = {count, num_classes * 4};
+  std::vector<int64_t> scores_dims  = {count, num_classes};
+  std::vector<int64_t> classes_dims = {count, num_classes * 4};
 
   PopulateCPUBlob(&ws, true, "cpu_scores", scores_dims);
   PopulateCPUBlob(&ws, true, "cpu_classes", classes_dims);
@@ -35,8 +35,8 @@ TEST(OPENCLOperatorTest, BoxWithNMSLimit_SoftNMS) {
 
   const int count       = 10;
   const int num_classes = 4;
-  std::vector<int> scores_dims  = {count, num_classes};
-  std::vector<int> classes_dims = {count, num_classes * 4};
+  std::vector<int64_t> scores_dims  = {count, num_classes};
+  std::vector<int64_t> classes_dims = {count, num_classes * 4};
 
   PopulateCPUBlob(&ws, true, "cpu_scores", scores_dims);
   PopulateCPUBlob(&ws, true, "cpu_classes", classes_dims);
@@ -65,8 +65,8 @@ TEST(OPENCLOperatorTest, BoxWithNMSLimit_LowDetections) {
 
   const int count       = 10;
   const int num_classes = 4;
-  std::vector<int> scores_dims  = {count, num_classes};
-  std::vector<int> classes_dims = {count, num_classes * 4};
+  std::vector<int64_t> scores_dims  = {count, num_classes};
+  std::vector<int64_t> classes_dims = {count, num_classes * 4};
 
   PopulateCPUBlob(&ws, true, "cpu_scores", scores_dims);
   PopulateCPUBlob(&ws, true, "cpu_classes", classes_dims);

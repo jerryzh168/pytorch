@@ -28,7 +28,7 @@ void PopulateCPUBlob(Workspace *ws, bool random, std::string name,
                      std::vector<int64_t> dims, int val = 1, float dist_shift = 0, float variance = 1) {
   Blob* blob = ws->CreateBlob(name);
   auto* tensor = BlobGetMutableTensor(blob, dims, at::dtype<T>().device(CPU));
-  T* t_data = tensor->mutable_data<T>();
+  T* t_data = tensor->template mutable_data<T>();
   std::random_device rd;
   std::mt19937 e2(rd());
   std::normal_distribution<> dist(0 + dist_shift, variance + dist_shift);

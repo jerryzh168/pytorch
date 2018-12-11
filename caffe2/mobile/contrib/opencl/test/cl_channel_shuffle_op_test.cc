@@ -3,7 +3,7 @@
 namespace caffe2 {
 
 TEST(OPENCLOperatorTest, ChannelShuffle) {
-  for (auto input_dims: std::vector<std::vector<int>>({
+  for (auto input_dims: std::vector<std::vector<int64_t>>({
         {1, 16, 20, 20},
         {2, 16, 20, 20},
         {1, 24, 20, 20},

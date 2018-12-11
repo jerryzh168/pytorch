@@ -4,7 +4,7 @@ namespace caffe2 {
 
 TEST(OPENCLOperatorTest, CopyFromCL) {
 
-  for (auto dims: std::vector<std::vector<int>>{
+  for (auto dims: std::vector<std::vector<int64_t>>{
       {1},
       {3},
       {1, 2},

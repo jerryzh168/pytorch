@@ -69,7 +69,7 @@ bool CLConcatOp<T>::RunOnDevice() {
     auto *Xblob = OperatorBase::Inputs()[i];
     inputsBlob.push_back(Xblob);
   }
-  std::vector<int> output_dims = {N, channelCount_, height, width};
+  std::vector<int64_t> output_dims = {N, channelCount_, height, width};
   OpenCLTensor<T> *Y =
       OperatorBase::Outputs()[0]->template GetMutable<OpenCLTensor<T>>();
   if (first_run_) {
